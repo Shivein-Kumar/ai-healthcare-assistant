@@ -1,0 +1,1126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediAI — AI Healthcare Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f1e;--bg2:#0f1729;--bg3:#141d35;--bg4:#1a2440;
+  --card:#141d35;--card2:#1a2440;
+  --border:#1e2d50;--border2:#253360;
+  --text:#e8edf8;--text2:#8892a4;--text3:#5a6478;
+  --accent:#3b82f6;--accent2:#60a5fa;--accent3:#93c5fd;
+  --green:#10b981;--red:#ef4444;--yellow:#f59e0b;--purple:#8b5cf6;
+  --teal:#14b8a6;--pink:#ec4899;
+  --glow:rgba(59,130,246,0.15);
+  --font:'Sora',sans-serif;
+  --font2:'DM Sans',sans-serif;
+  --r:12px;--r2:16px;--r3:20px;
+  --sh:0 4px 24px rgba(0,0,0,0.4);
+  --sh2:0 8px 40px rgba(0,0,0,0.6);
+}
+body{font-family:var(--font2);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:var(--font)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(10,15,30,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font);font-weight:700;font-size:18px;cursor:pointer}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-tabs{display:flex;gap:4px;background:var(--bg2);padding:4px;border-radius:10px;border:1px solid var(--border)}
+.nav-tab{padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;border:none;background:transparent;font-family:var(--font2)}
+.nav-tab:hover{color:var(--text);background:var(--bg3)}
+.nav-tab.active{background:var(--accent);color:#fff}
+.nav-right{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;cursor:pointer}
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font2);font-weight:500;font-size:13px;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+
+/* PAGES */
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* LANDING */
+.hero{padding:80px 32px;text-align:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,0.12) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(32px,5vw,56px);font-weight:700;line-height:1.15;letter-spacing:-0.02em;margin-bottom:20px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent2),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:17px;color:var(--text2);max-width:560px;margin:0 auto 36px;line-height:1.7}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-lg{padding:14px 28px;font-size:15px;border-radius:12px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:600px;margin:56px auto 0;text-align:center}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.stat-num{font-size:28px;font-weight:700;font-family:var(--font);margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--text2)}
+.features{padding:60px 32px;max-width:1100px;margin:0 auto}
+.features h2{text-align:center;font-size:28px;font-weight:700;margin-bottom:8px}
+.features-sub{text-align:center;color:var(--text2);font-size:15px;margin-bottom:40px}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:24px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--sh)}
+.feat-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow),transparent);opacity:0;transition:.2s}
+.feat-card:hover::after{opacity:1}
+.feat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px}
+.feat-card h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feat-card p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* DASHBOARD */
+.dash{padding:28px 32px}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.dash-header h2{font-size:22px;font-weight:700}
+.greeting{color:var(--text2);font-size:13px;margin-top:2px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;position:relative;overflow:hidden}
+.metric::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:50%;background:var(--accent-color,var(--accent));opacity:.08;transform:translate(20px,-20px)}
+.metric-label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.metric-val{font-size:26px;font-weight:700;font-family:var(--font)}
+.metric-trend{font-size:12px;color:var(--green);margin-top:4px;display:flex;align-items:center;gap:4px}
+.dash-body{display:grid;grid-template-columns:1fr 360px;gap:20px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:600}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--accent3)}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.history-list{display:flex;flex-direction:column;gap:10px}
+.hist-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.hist-item:hover{border-color:var(--border2);background:var(--bg4)}
+.hist-icon{width:36px;height:36px;border-radius:9px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hist-main{flex:1}
+.hist-name{font-size:13px;font-weight:500}
+.hist-date{font-size:11px;color:var(--text3);margin-top:2px}
+.hist-right{text-align:right}
+.severity{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
+.sev-low{background:rgba(16,185,129,.15);color:var(--green)}
+.sev-med{background:rgba(245,158,11,.15);color:var(--yellow)}
+.sev-high{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* SYMPTOM CHECKER */
+.checker{padding:32px;max-width:800px;margin:0 auto}
+.checker h2{font-size:24px;font-weight:700;margin-bottom:6px}
+.checker-sub{color:var(--text2);margin-bottom:28px;font-size:14px}
+.symptom-input-wrap{position:relative;margin-bottom:16px}
+.symptom-input{width:100%;padding:14px 48px 14px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);font-family:var(--font2);font-size:15px;outline:none;transition:.2s}
+.symptom-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.symptom-input::placeholder{color:var(--text3)}
+.mic-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--accent);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:.2s}
+.mic-btn:hover{background:var(--accent2)}
+.mic-btn.active{background:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+.symptoms-dropdown{background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);margin-top:4px;overflow:hidden;max-height:200px;overflow-y:auto}
+.symptom-opt{padding:11px 16px;cursor:pointer;font-size:14px;transition:.15s;display:flex;align-items:center;gap:10px}
+.symptom-opt:hover{background:var(--bg4)}
+.symptom-opt-icon{width:24px;height:24px;border-radius:6px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;font-size:11px}
+.selected-symptoms{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;min-height:40px}
+.symptom-tag{display:flex;align-items:center;gap:6px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--accent3);padding:6px 12px;border-radius:20px;font-size:13px}
+.symptom-tag button{background:none;border:none;color:var(--accent3);cursor:pointer;font-size:14px;display:flex;align-items:center;opacity:.7}
+.symptom-tag button:hover{opacity:1}
+.results-section{margin-top:32px}
+.results-title{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.disease-cards{display:flex;flex-direction:column;gap:16px}
+.disease-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;transition:.2s}
+.disease-card:hover{border-color:var(--border2)}
+.dc-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.dc-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+.dc-rank{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.dc-meta{display:flex;align-items:center;gap:12px}
+.prob-bar-wrap{display:flex;align-items:center;gap:8px}
+.prob-bar{height:6px;width:80px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--purple));transition:width .6s ease}
+.prob-pct{font-size:12px;font-weight:600;color:var(--accent3);min-width:32px;text-align:right}
+.dc-body{padding:0 20px 20px;display:none}
+.dc-body.open{display:block;animation:slideDown .2s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.dc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.dc-section{background:var(--bg3);border-radius:var(--r);padding:14px}
+.dc-section h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dc-section ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.dc-section li{font-size:13px;color:var(--text2);padding-left:14px;position:relative;line-height:1.4}
+.dc-section li::before{content:'•';position:absolute;left:0;color:var(--accent)}
+.confidence-meter{display:flex;align-items:center;gap:8px;margin:4px 0}
+.conf-bar{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.conf-fill{height:100%;border-radius:4px;transition:width .8s ease}
+
+/* CHATBOT */
+.chatbot{padding:0;display:flex;flex-direction:column;height:calc(100vh - 65px)}
+.chat-header{padding:20px 24px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;gap:12px}
+.ai-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--accent));display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
+.ai-status{position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--bg2)}
+.chat-name{font-weight:600;font-size:15px}
+.chat-sub{font-size:12px;color:var(--green);display:flex;align-items:center;gap:5px}
+.chat-messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:12px;max-width:85%;animation:fadeIn .3s ease}
+.msg.user{flex-direction:row-reverse;align-self:flex-end}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.msg.ai .msg-avatar{background:linear-gradient(135deg,var(--teal),var(--accent))}
+.msg.user .msg-avatar{background:linear-gradient(135deg,var(--accent),var(--purple))}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6}
+.msg.ai .msg-bubble{background:var(--card2);border:1px solid var(--border);border-top-left-radius:4px}
+.msg.user .msg-bubble{background:var(--accent);color:#fff;border-top-right-radius:4px}
+.msg-time{font-size:10px;color:var(--text3);margin-top:4px}
+.typing-indicator{display:flex;gap:4px;padding:14px 16px;background:var(--card2);border:1px solid var(--border);border-radius:16px;border-top-left-radius:4px;width:fit-content}
+.typing-dot{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:bounce .8s infinite}
+.typing-dot:nth-child(2){animation-delay:.15s}
+.typing-dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.chat-suggestions{padding:12px 24px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid var(--border);background:var(--bg2)}
+.sugg-chip{padding:7px 14px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap;transition:.2s;color:var(--text2)}
+.sugg-chip:hover{border-color:var(--accent);color:var(--accent3);background:rgba(59,130,246,.08)}
+.chat-input-area{padding:16px 24px;border-top:1px solid var(--border);background:var(--bg2);display:flex;gap:12px;align-items:flex-end}
+.chat-input{flex:1;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);font-family:var(--font2);font-size:14px;outline:none;resize:none;max-height:120px;line-height:1.5;transition:.2s}
+.chat-input:focus{border-color:var(--accent)}
+.chat-send{width:40px;height:40px;background:var(--accent);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s;flex-shrink:0}
+.chat-send:hover{background:var(--accent2);transform:scale(1.05)}
+
+/* PROFILE */
+.profile{padding:32px;max-width:700px;margin:0 auto}
+.profile-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:28px;margin-bottom:20px;position:relative;overflow:hidden}
+.profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15))}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin-bottom:12px;border:3px solid var(--bg2)}
+.profile-name{font-size:20px;font-weight:700;margin-bottom:2px}
+.profile-email{font-size:13px;color:var(--text2)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.profile-field{background:var(--bg3);border-radius:var(--r);padding:14px}
+.field-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.field-value{font-size:14px;font-weight:500}
+.settings-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:16px}
+.settings-section h3{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--text2)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-info h4{font-size:14px;font-weight:500}
+.setting-info p{font-size:12px;color:var(--text2);margin-top:2px}
+.toggle{width:44px;height:24px;background:var(--border2);border-radius:12px;position:relative;cursor:pointer;transition:.2s}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}
+.toggle.on::after{left:22px}
+
+/* REPORT UPLOAD */
+.reports{padding:32px;max-width:700px;margin:0 auto}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:48px 24px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:24px}
+.upload-zone:hover{border-color:var(--accent);background:rgba(59,130,246,.04)}
+.upload-zone.drag{border-color:var(--accent);background:rgba(59,130,246,.08)}
+.upload-icon{font-size:40px;margin-bottom:16px}
+.upload-zone h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.upload-zone p{font-size:13px;color:var(--text2)}
+.upload-types{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.type-badge{padding:4px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text3)}
+.report-list{display:flex;flex-direction:column;gap:12px}
+.report-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;display:flex;align-items:center;gap:14px;transition:.2s}
+.report-item:hover{border-color:var(--border2)}
+.report-icon{width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;font-size:18px}
+.report-info{flex:1}
+.report-name{font-size:14px;font-weight:500}
+.report-meta{font-size:12px;color:var(--text2);margin-top:3px}
+.report-actions{display:flex;gap:8px}
+.icon-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s;color:var(--text2)}
+.icon-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg4)}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);animation:toastIn .3s ease;border:1px solid}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast-success{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.3);color:#34d399}
+.toast-info{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:var(--accent3)}
+.toast-error{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
+
+/* UTILS */
+.sep{height:1px;background:var(--border);margin:24px 0}
+.empty-state{text-align:center;padding:48px;color:var(--text3);font-size:14px}
+.empty-icon{font-size:48px;margin-bottom:16px;display:block}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .nav-tabs{display:none}
+  .nav{padding:12px 16px}
+  .dash-body{grid-template-columns:1fr}
+  .dc-grid{grid-template-columns:1fr}
+  .profile-grid{grid-template-columns:1fr}
+  .checker,.profile,.reports,.dash,.features{padding:20px 16px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo" onclick="gotoPage('landing')">
+    <div class="logo-icon">⚕</div>
+    <span>MediAI</span>
+  </div>
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" onclick="gotoPage('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="gotoPage('checker')">Symptom Check</button>
+    <button class="nav-tab" onclick="gotoPage('chatbot')">AI Chat</button>
+    <button class="nav-tab" onclick="gotoPage('reports')">Reports</button>
+  </div>
+  <div class="nav-right">
+    <div class="avatar" onclick="gotoPage('profile')" title="Profile">JD</div>
+  </div>
+</nav>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- LANDING PAGE -->
+<div class="page active" id="page-landing">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <h1>Your AI-Powered<br><span>Healthcare Companion</span></h1>
+    <p>Intelligent symptom analysis, real-time health recommendations, and a personal AI doctor available 24/7. Take control of your health journey.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary btn-lg" onclick="gotoPage('checker')">🔍 Check Symptoms</button>
+      <button class="btn btn-ghost btn-lg" onclick="gotoPage('dashboard')">📊 View Dashboard</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="stat-num" data-target="98">0</div><div class="stat-label">% Accuracy Rate</div></div>
+      <div class="stat-card"><div class="stat-num" data-target="500">0</div><div class="stat-label">+ Symptoms Tracked</div></div>
+      <div class="stat-card"><div class="stat-num" data-target="150">0</div><div class="stat-label">+ Diseases Detected</div></div>
+    </div>
+  </div>
+  <div class="features">
+    <h2>Everything You Need</h2>
+    <p class="features-sub">Powered by advanced AI to give you the most accurate health insights</p>
+    <div class="features-grid">
+      <div class="feat-card" onclick="gotoPage('checker')">
+        <div class="feat-icon" style="background:rgba(59,130,246,.15);font-size:22px">🩺</div>
+        <h3>Smart Symptom Checker</h3>
+        <p>Describe your symptoms and get instant analysis with probability scores and severity levels.</p>
+      </div>
+      <div class="feat-card" onclick="gotoPage('chatbot')">
+        <div class="feat-icon" style="background:rgba(20,184,166,.15);font-size:22px">🤖</div>
+        <h3>AI Health Chatbot</h3>
+        <p>Chat with our intelligent AI assistant for personalized health advice, 24 hours a day.</p>
+      </div>
+      <div class="feat-card" onclick="gotoPage('dashboard')">
+        <div class="feat-icon" style="background:rgba(139,92,246,.15);font-size:22px">📈</div>
+        <h3>Health Analytics</h3>
+        <p>Track your health history with beautiful charts, trends, and personalized insights.</p>
+      </div>
+      <div class="feat-card" onclick="gotoPage('reports')">
+        <div class="feat-icon" style="background:rgba(245,158,11,.15);font-size:22px">📋</div>
+        <h3>Medical Reports</h3>
+        <p>Upload and store your medical reports securely with AI-powered text extraction.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(16,185,129,.15);font-size:22px">🎯</div>
+        <h3>Treatment Guidance</h3>
+        <p>Get detailed recommendations including diet, exercise, and when to see a specialist.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(236,72,153,.15);font-size:22px">🔒</div>
+        <h3>Secure & Private</h3>
+        <p>Your health data is encrypted and stored securely. HIPAA-compliant infrastructure.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dashboard">
+  <div class="dash">
+    <div class="dash-header">
+      <div>
+        <h2>Health Dashboard</h2>
+        <div class="greeting" id="greeting">Good morning, John! Here's your health overview.</div>
+      </div>
+      <button class="btn btn-primary" onclick="gotoPage('checker')">+ New Check</button>
+    </div>
+    <div class="dash-grid">
+      <div class="metric" style="--accent-color:var(--accent)">
+        <div class="metric-label">Total Checks</div>
+        <div class="metric-val" data-target="24">0</div>
+        <div class="metric-trend">↑ 3 this week</div>
+      </div>
+      <div class="metric" style="--accent-color:var(--green)">
+        <div class="metric-label">Health Score</div>
+        <div class="metric-val" data-target="78">0</div>
+        <div class="metric-trend">↑ Good standing</div>
+      </div>
+      <div class="metric" style="--accent-color:var(--yellow)">
+        <div class="metric-label">Alerts</div>
+        <div class="metric-val" data-target="2">0</div>
+        <div class="metric-trend" style="color:var(--yellow)">⚠ 2 pending reviews</div>
+      </div>
+      <div class="metric" style="--accent-color:var(--purple)">
+        <div class="metric-label">Reports Stored</div>
+        <div class="metric-val" data-target="7">0</div>
+        <div class="metric-trend">↑ 1 new this month</div>
+      </div>
+    </div>
+    <div class="dash-body">
+      <div class="chart-card">
+        <div class="card-header">
+          <div class="card-title">Symptom Frequency</div>
+          <div class="badge badge-blue">Last 30 days</div>
+        </div>
+        <canvas id="symptomChart" height="200"></canvas>
+      </div>
+      <div class="chart-card" style="display:flex;flex-direction:column">
+        <div class="card-header">
+          <div class="card-title">Recent History</div>
+          <div class="badge badge-green">5 records</div>
+        </div>
+        <div class="history-list">
+          <div class="hist-item">
+            <div class="hist-icon">🤧</div>
+            <div class="hist-main">
+              <div class="hist-name">Flu Symptoms</div>
+              <div class="hist-date">Dec 22, 2024 · 4 symptoms</div>
+            </div>
+            <div class="hist-right"><span class="severity sev-med">Medium</span></div>
+          </div>
+          <div class="hist-item">
+            <div class="hist-icon">😮‍💨</div>
+            <div class="hist-main">
+              <div class="hist-name">Respiratory Check</div>
+              <div class="hist-date">Dec 18, 2024 · 2 symptoms</div>
+            </div>
+            <div class="hist-right"><span class="severity sev-low">Low</span></div>
+          </div>
+          <div class="hist-item">
+            <div class="hist-icon">🤕</div>
+            <div class="hist-main">
+              <div class="hist-name">Headache & Fatigue</div>
+              <div class="hist-date">Dec 12, 2024 · 3 symptoms</div>
+            </div>
+            <div class="hist-right"><span class="severity sev-high">High</span></div>
+          </div>
+          <div class="hist-item">
+            <div class="hist-icon">🤒</div>
+            <div class="hist-main">
+              <div class="hist-name">Fever Check</div>
+              <div class="hist-date">Nov 30, 2024 · 2 symptoms</div>
+            </div>
+            <div class="hist-right"><span class="severity sev-med">Medium</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px">
+      <div class="chart-card">
+        <div class="card-header">
+          <div class="card-title">Health Trends</div>
+          <div class="badge badge-blue">Weekly</div>
+        </div>
+        <canvas id="trendChart" height="140"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SYMPTOM CHECKER PAGE -->
+<div class="page" id="page-checker">
+  <div class="checker">
+    <h2>Symptom Checker</h2>
+    <p class="checker-sub">Select your symptoms below — our AI will analyze them and provide possible diagnoses.</p>
+    <div class="symptom-input-wrap">
+      <input class="symptom-input" id="symptomSearch" placeholder="Type a symptom (e.g., headache, fever, cough)..." oninput="filterSymptoms(this.value)" autocomplete="off">
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Voice input">🎙</button>
+    </div>
+    <div class="symptoms-dropdown" id="symptomsDropdown" style="display:none"></div>
+    <div class="selected-symptoms" id="selectedSymptoms">
+      <div style="color:var(--text3);font-size:13px;padding:8px 0;display:flex;align-items:center;gap:6px" id="symptomsPlaceholder">
+        ← Search and add symptoms above
+      </div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <button class="btn btn-primary" style="flex:1;padding:14px" onclick="analyzeSymptoms()" id="analyzeBtn" disabled>
+        🔬 Analyze Symptoms
+      </button>
+      <button class="btn btn-ghost" onclick="clearSymptoms()">Clear</button>
+    </div>
+    <div class="results-section" id="resultsSection" style="display:none">
+      <div class="results-title">🧬 AI Analysis Results <span class="badge badge-blue" id="resultsCount"></span></div>
+      <div class="disease-cards" id="diseaseCards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHATBOT PAGE -->
+<div class="page" id="page-chatbot">
+  <div class="chatbot">
+    <div class="chat-header">
+      <div class="ai-avatar">🤖<div class="ai-status"></div></div>
+      <div>
+        <div class="chat-name">MediAI Assistant</div>
+        <div class="chat-sub">● Online · AI-powered health guidance</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg ai">
+        <div class="msg-avatar">🤖</div>
+        <div>
+          <div class="msg-bubble">Hello! I'm MediAI, your intelligent health assistant. I can help you understand symptoms, explain medical terms, provide wellness tips, and guide you on when to seek professional care.<br><br>How can I help you today? 💊</div>
+          <div class="msg-time">Just now</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-suggestions" id="chatSuggestions">
+      <div class="sugg-chip" onclick="sendSuggestion(this)">I have fever and headache 🤒</div>
+      <div class="sugg-chip" onclick="sendSuggestion(this)">Should I see a doctor? 🏥</div>
+      <div class="sugg-chip" onclick="sendSuggestion(this)">How to reduce stress? 🧘</div>
+      <div class="sugg-chip" onclick="sendSuggestion(this)">Healthy diet tips 🥗</div>
+      <div class="sugg-chip" onclick="sendSuggestion(this)">Explain my symptoms 💊</div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Type your health question..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="chat-send" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORTS PAGE -->
+<div class="page" id="page-reports">
+  <div class="reports">
+    <h2 style="margin-bottom:6px">Medical Reports</h2>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:24px">Upload and manage your medical documents securely</p>
+    <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">📁</div>
+      <h3>Drop your files here</h3>
+      <p>or click to browse</p>
+      <div class="upload-types">
+        <span class="type-badge">PDF</span>
+        <span class="type-badge">JPG</span>
+        <span class="type-badge">PNG</span>
+        <span class="type-badge">DICOM</span>
+      </div>
+    </div>
+    <input type="file" id="fileInput" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+    <div class="card-header" style="margin-bottom:12px">
+      <div class="card-title">Uploaded Reports</div>
+      <div class="badge badge-blue" id="reportCount">7 files</div>
+    </div>
+    <div class="report-list" id="reportList"></div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div class="profile">
+    <div class="profile-hero">
+      <div class="profile-avatar">JD</div>
+      <div class="profile-name">John Doe</div>
+      <div class="profile-email">john.doe@email.com</div>
+      <div class="profile-grid">
+        <div class="profile-field"><div class="field-label">Date of Birth</div><div class="field-value">March 15, 1990</div></div>
+        <div class="profile-field"><div class="field-label">Blood Type</div><div class="field-value">O+ (Positive)</div></div>
+        <div class="profile-field"><div class="field-label">Height</div><div class="field-value">178 cm</div></div>
+        <div class="profile-field"><div class="field-label">Weight</div><div class="field-value">72 kg</div></div>
+        <div class="profile-field"><div class="field-label">Allergies</div><div class="field-value">Penicillin, Dust</div></div>
+        <div class="profile-field"><div class="field-label">Emergency Contact</div><div class="field-value">+1 (555) 0192</div></div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>⚙️ Preferences</h3>
+      <div class="setting-row">
+        <div class="setting-info"><h4>Health Notifications</h4><p>Receive reminders and health tips</p></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info"><h4>AI Predictions</h4><p>Enable advanced ML-based analysis</p></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info"><h4>Data Sharing</h4><p>Share anonymized data for research</p></div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info"><h4>Dark Mode</h4><p>Always enabled in this version</p></div>
+        <div class="toggle on"></div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>🔒 Security</h3>
+      <div class="setting-row">
+        <div class="setting-info"><h4>Two-Factor Authentication</h4><p>Extra security for your account</p></div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info"><h4>Biometric Login</h4><p>Use fingerprint or face ID</p></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%;padding:14px;margin-top:4px;color:var(--red);border-color:rgba(239,68,68,.3)" onclick="showToast('Logged out successfully','success')">
+      Sign Out
+    </button>
+  </div>
+</div>
+
+<script>
+// ============== DATA ==============
+const SYMPTOMS_DB = [
+  {id:'fever',label:'Fever',icon:'🌡️'},
+  {id:'headache',label:'Headache',icon:'🤕'},
+  {id:'cough',label:'Cough',icon:'😮‍💨'},
+  {id:'fatigue',label:'Fatigue',icon:'😴'},
+  {id:'sore_throat',label:'Sore Throat',icon:'🤒'},
+  {id:'body_aches',label:'Body Aches',icon:'🦴'},
+  {id:'runny_nose',label:'Runny Nose',icon:'🤧'},
+  {id:'nausea',label:'Nausea',icon:'🤢'},
+  {id:'vomiting',label:'Vomiting',icon:'🤮'},
+  {id:'diarrhea',label:'Diarrhoea',icon:'🚽'},
+  {id:'shortness_breath',label:'Shortness of Breath',icon:'💨'},
+  {id:'chest_pain',label:'Chest Pain',icon:'💔'},
+  {id:'dizziness',label:'Dizziness',icon:'😵'},
+  {id:'rash',label:'Skin Rash',icon:'🔴'},
+  {id:'joint_pain',label:'Joint Pain',icon:'🦵'},
+  {id:'abdominal_pain',label:'Abdominal Pain',icon:'🫃'},
+  {id:'loss_appetite',label:'Loss of Appetite',icon:'🍽️'},
+  {id:'chills',label:'Chills',icon:'🥶'},
+  {id:'swollen_lymph',label:'Swollen Lymph Nodes',icon:'🫙'},
+  {id:'back_pain',label:'Back Pain',icon:'🪑'},
+  {id:'eye_redness',label:'Eye Redness',icon:'👁️'},
+  {id:'ear_pain',label:'Ear Pain',icon:'👂'},
+  {id:'muscle_weakness',label:'Muscle Weakness',icon:'💪'},
+  {id:'insomnia',label:'Insomnia',icon:'😶‍🌫️'},
+  {id:'anxiety',label:'Anxiety',icon:'😰'},
+];
+
+const DISEASES_DB = {
+  flu: {
+    name: 'Influenza (Flu)',
+    description: 'A viral respiratory illness that spreads person to person and can cause mild to severe illness.',
+    precautions: ['Rest at home','Stay hydrated','Wear a mask','Wash hands frequently','Avoid crowds'],
+    diet: ['Warm soups and broths','Citrus fruits (Vitamin C)','Honey and ginger tea','Garlic and turmeric','Plenty of water'],
+    medicines: ['Tamiflu (Oseltamivir)','Acetaminophen for fever','Ibuprofen for pain','Decongestants','Cough suppressants'],
+    exercise: ['Light walking only','Stretching exercises','Deep breathing','No strenuous activity','Rest is key'],
+    doctor: 'Consult immediately if fever exceeds 39°C, breathing difficulties, or symptoms worsen after 7 days.',
+    colors: {accent:'#3b82f6',light:'rgba(59,130,246,.1)'}
+  },
+  cold: {
+    name: 'Common Cold',
+    description: 'A viral infection of your nose and throat caused by numerous viruses, most commonly rhinoviruses.',
+    precautions: ['Frequent handwashing','Avoid touching face','Stay home if sick','Cover coughs and sneezes','Boost immunity'],
+    diet: ['Warm liquids','Spicy foods to clear sinuses','Fresh fruits','Zinc-rich foods','Probiotic yogurt'],
+    medicines: ['Antihistamines','Decongestant nasal spray','Vitamin C supplements','Zinc lozenges','Saline nasal rinse'],
+    exercise: ['Light yoga','Gentle walks','Breathing exercises','Rest when tired','No intense workouts'],
+    doctor: 'See a doctor if symptoms persist beyond 10 days, you have high fever, or symptoms are severe.',
+    colors: {accent:'#14b8a6',light:'rgba(20,184,166,.1)'}
+  },
+  migraine: {
+    name: 'Migraine',
+    description: 'A neurological condition characterized by intense, debilitating headaches often accompanied by nausea and sensitivity to light.',
+    precautions: ['Keep a headache diary','Avoid known triggers','Maintain sleep schedule','Manage stress levels','Stay hydrated'],
+    diet: ['Avoid caffeine and alcohol','Magnesium-rich foods','Regular meal times','Avoid MSG and processed foods','Omega-3 fatty acids'],
+    medicines: ['Triptans (Sumatriptan)','NSAIDs (Ibuprofen)','Anti-nausea medication','Beta-blockers (preventive)','Topiramate'],
+    exercise: ['Low-impact aerobics','Yoga and stretching','Swimming','Avoid intense exercise during attack','Regular gentle exercise'],
+    doctor: 'Seek immediate care if headache is sudden and severe, accompanied by fever, stiff neck, confusion, or vision changes.',
+    colors: {accent:'#8b5cf6',light:'rgba(139,92,246,.1)'}
+  },
+  gastro: {
+    name: 'Gastroenteritis',
+    description: 'An intestinal infection marked by diarrhea, abdominal cramps, nausea, vomiting, and sometimes fever.',
+    precautions: ['Drink plenty of fluids','Practice good hygiene','Avoid dairy initially','Wash produce carefully','Avoid sharing utensils'],
+    diet: ['BRAT diet (Banana, Rice, Applesauce, Toast)','Clear broths','Oral rehydration solution','Avoid greasy foods','Gradual reintroduction'],
+    medicines: ['ORS (Oral Rehydration Salts)','Loperamide for diarrhea','Anti-nausea medication','Probiotics','Activated charcoal'],
+    exercise: ['Complete rest during acute phase','Light walking when recovering','Avoid strenuous activity','Gentle yoga after recovery','Stay horizontal if nauseated'],
+    doctor: 'Visit doctor if severe dehydration, blood in stool, high fever (39°C+), or symptoms lasting more than 3 days.',
+    colors: {accent:'#f59e0b',light:'rgba(245,158,11,.1)'}
+  },
+  pneumonia: {
+    name: 'Pneumonia',
+    description: 'An infection that inflames the air sacs in one or both lungs, which may fill with fluid or pus.',
+    precautions: ['Rest completely','Stay isolated','Take prescribed antibiotics fully','Deep breathing exercises','Pneumococcal vaccine'],
+    diet: ['High protein foods','Fresh vegetables','Citrus and berries','Warm herbal teas','Garlic and onion'],
+    medicines: ['Antibiotics (Amoxicillin)','Antiviral if viral cause','Fever reducers','Expectorants','Bronchodilators'],
+    exercise: ['Complete bed rest initially','Slow deep breathing','Gentle chest physiotherapy','Progressive walking','No exercise until cleared'],
+    doctor: 'Emergency care needed if breathing is very difficult, lips turn blue, confusion, or high fever with chills.',
+    colors: {accent:'#ef4444',light:'rgba(239,68,68,.1)'}
+  }
+};
+
+const AI_RESPONSES = {
+  fever: ["Fever is your body's natural defense mechanism against infections. A temperature above 38°C is considered a fever. Key things to do:\n\n• Stay well hydrated\n• Rest as much as possible\n• Take acetaminophen or ibuprofen for comfort\n• Apply a cool, damp cloth to your forehead\n\nIf fever exceeds 39.5°C or lasts more than 3 days, please consult a doctor. 🌡️"],
+  headache: ["Headaches can have many causes — tension, dehydration, stress, or illness. Here are some immediate relief tips:\n\n• Drink water immediately (dehydration is a common cause)\n• Rest in a quiet, dark room\n• Try over-the-counter pain relievers\n• Gentle neck stretches can help\n• Apply a cold or warm compress\n\nIf headaches are frequent or very severe, I'd recommend seeing a neurologist. 💊"],
+  doctor: ["Here are guidelines for when you should see a doctor:\n\n🔴 Emergency (call 911):\n• Chest pain or breathing difficulty\n• Sudden severe headache\n• Signs of stroke (FAST)\n\n🟡 See doctor soon:\n• Fever above 39°C lasting 3+ days\n• Symptoms not improving after a week\n• Any concerning new symptoms\n\n🟢 Monitor at home:\n• Mild cold or flu symptoms\n• Minor cuts and bruises\n• Mild stomach upset\n\nAlways trust your instincts — if something feels wrong, seek help! 🏥"],
+  stress: ["Stress management is crucial for overall health. Here are evidence-based techniques:\n\n🧘 Immediate relief:\n• 4-7-8 breathing technique\n• 5-minute mindfulness meditation\n• Progressive muscle relaxation\n\n📅 Daily habits:\n• Regular exercise (30 min/day)\n• Consistent sleep schedule\n• Limit caffeine after 2pm\n• Journaling and gratitude practice\n\n🌿 Lifestyle changes:\n• Connect with loved ones\n• Set realistic boundaries\n• Consider therapy or counseling\n\nRemember: stress is manageable with the right tools! 💪"],
+  diet: ["Here are evidence-based healthy eating tips:\n\n🥗 Foundation of good nutrition:\n• Half your plate should be vegetables and fruits\n• Choose whole grains over refined\n• Lean proteins (fish, legumes, poultry)\n• Healthy fats (avocado, nuts, olive oil)\n\n💧 Hydration:\n• Aim for 8-10 glasses of water daily\n• Limit sugary drinks and alcohol\n• Herbal teas are great alternatives\n\n⏰ Meal timing:\n• Don't skip breakfast\n• Eat every 3-4 hours\n• Stop eating 2-3 hours before bed\n\nSmall, consistent changes make the biggest difference! 🌟"],
+  default: ["Thank you for your question! Based on what you've shared, here's what I'd suggest:\n\nAs an AI health assistant, I can provide general health information and guidance. For accurate diagnosis, always consult with a qualified healthcare professional.\n\nIn the meantime:\n• Monitor your symptoms carefully\n• Stay hydrated and rest\n• Avoid self-medicating without guidance\n• Use our symptom checker for a preliminary analysis\n\nIs there anything specific about your symptoms I can help you understand better? 🩺"]
+};
+
+const MOCK_REPORTS = [
+  {name:'Blood Test Report - Dec 2024',type:'PDF',size:'2.4 MB',date:'Dec 20, 2024',icon:'📄',color:'rgba(239,68,68,.15)'},
+  {name:'Chest X-Ray Analysis',type:'PNG',size:'4.1 MB',date:'Nov 15, 2024',icon:'🫁',color:'rgba(59,130,246,.15)'},
+  {name:'ECG Report - Cardiology',type:'PDF',size:'1.8 MB',date:'Oct 28, 2024',icon:'❤️',color:'rgba(239,68,68,.15)'},
+  {name:'Annual Physical Checkup',type:'PDF',size:'3.2 MB',date:'Sep 10, 2024',icon:'📋',color:'rgba(16,185,129,.15)'},
+  {name:'Allergy Panel Results',type:'PDF',size:'1.1 MB',date:'Aug 5, 2024',icon:'🌸',color:'rgba(139,92,246,.15)'},
+  {name:'Dental X-Ray',type:'JPG',size:'2.7 MB',date:'Jul 20, 2024',icon:'🦷',color:'rgba(245,158,11,.15)'},
+  {name:'Thyroid Function Test',type:'PDF',size:'0.9 MB',date:'Jun 12, 2024',icon:'🧪',color:'rgba(20,184,166,.15)'},
+];
+
+// ============== STATE ==============
+let currentPage = 'landing';
+let selectedSymptoms = [];
+let micActive = false;
+let chatHistory = [];
+let reports = [...MOCK_REPORTS];
+
+// ============== NAVIGATION ==============
+function gotoPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const tabMap = {dashboard:0,checker:1,chatbot:2,reports:3};
+  if (tabMap[page] !== undefined) {
+    document.querySelectorAll('.nav-tab')[tabMap[page]].classList.add('active');
+  }
+  currentPage = page;
+  if (page === 'dashboard') initCharts();
+  if (page === 'reports') renderReports();
+  window.scrollTo(0,0);
+}
+
+// ============== TOAST ==============
+function showToast(msg, type='info') {
+  const tc = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  const icons = {success:'✓',info:'ℹ',error:'✕'};
+  t.innerHTML = `<span>${icons[type]||icons.info}</span>${msg}`;
+  tc.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+// ============== LANDING ANIMATIONS ==============
+function animateCounters() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    let current = 0;
+    const step = Math.max(1, Math.floor(target / 40));
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = current + (el.closest('.stat-card') ? (el.dataset.target == 98 ? '%' : '+') : '');
+      if (current >= target) clearInterval(timer);
+    }, 30);
+  });
+}
+setTimeout(animateCounters, 300);
+
+// ============== GREETING ==============
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+  document.getElementById('greeting').textContent = `Good ${g}, John! Here's your health overview.`;
+}
+setGreeting();
+
+// ============== CHARTS ==============
+let chartsInit = false;
+function initCharts() {
+  if (chartsInit) return;
+  chartsInit = true;
+  const cfg = { color: 'rgba(232,237,248,0.6)', grid: 'rgba(232,237,248,0.06)' };
+
+  // Symptom frequency bar chart
+  new Chart(document.getElementById('symptomChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Headache','Fever','Cough','Fatigue','Nausea','Sore Throat'],
+      datasets: [{
+        data: [8,6,5,7,3,4],
+        backgroundColor: ['rgba(59,130,246,.7)','rgba(239,68,68,.7)','rgba(20,184,166,.7)','rgba(139,92,246,.7)','rgba(245,158,11,.7)','rgba(16,185,129,.7)'],
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2440',titleColor:'#e8edf8',bodyColor:'#8892a4',borderColor:'#1e2d50',borderWidth:1}},
+      scales:{
+        x:{grid:{color:cfg.grid},ticks:{color:cfg.color,font:{size:11}}},
+        y:{grid:{color:cfg.grid},ticks:{color:cfg.color,font:{size:11}}}
+      }
+    }
+  });
+
+  // Trend line chart
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [
+        {label:'Health Score',data:[72,75,71,78,74,80,78],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#3b82f6'},
+        {label:'Symptom Load',data:[40,35,50,28,42,20,25],borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.07)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#8b5cf6'}
+      ]
+    },
+    options: {
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:cfg.color,font:{size:11},boxWidth:12}},tooltip:{backgroundColor:'#1a2440',titleColor:'#e8edf8',bodyColor:'#8892a4',borderColor:'#1e2d50',borderWidth:1}},
+      scales:{
+        x:{grid:{color:cfg.grid},ticks:{color:cfg.color,font:{size:11}}},
+        y:{grid:{color:cfg.grid},ticks:{color:cfg.color,font:{size:11}}}
+      }
+    }
+  });
+
+  // Animate metric counters
+  document.querySelectorAll('.metric-val[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    let current = 0;
+    const step = Math.max(1, Math.floor(target / 30));
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = current;
+      if (current >= target) clearInterval(timer);
+    }, 40);
+  });
+}
+
+// ============== SYMPTOM CHECKER ==============
+function filterSymptoms(query) {
+  const dd = document.getElementById('symptomsDropdown');
+  if (!query.trim()) { dd.style.display = 'none'; return; }
+  const matches = SYMPTOMS_DB.filter(s =>
+    s.label.toLowerCase().includes(query.toLowerCase()) &&
+    !selectedSymptoms.find(sel => sel.id === s.id)
+  ).slice(0, 6);
+  if (!matches.length) { dd.style.display = 'none'; return; }
+  dd.innerHTML = matches.map(s =>
+    `<div class="symptom-opt" onclick="addSymptom('${s.id}')">
+      <div class="symptom-opt-icon">${s.icon}</div>
+      <span>${s.label}</span>
+    </div>`
+  ).join('');
+  dd.style.display = 'block';
+}
+
+function addSymptom(id) {
+  const s = SYMPTOMS_DB.find(x => x.id === id);
+  if (!s || selectedSymptoms.find(x => x.id === id)) return;
+  selectedSymptoms.push(s);
+  renderSelectedSymptoms();
+  document.getElementById('symptomSearch').value = '';
+  document.getElementById('symptomsDropdown').style.display = 'none';
+}
+
+function removeSymptom(id) {
+  selectedSymptoms = selectedSymptoms.filter(s => s.id !== id);
+  renderSelectedSymptoms();
+  if (selectedSymptoms.length === 0) {
+    document.getElementById('resultsSection').style.display = 'none';
+  }
+}
+
+function renderSelectedSymptoms() {
+  const container = document.getElementById('selectedSymptoms');
+  const btn = document.getElementById('analyzeBtn');
+  const placeholder = document.getElementById('symptomsPlaceholder');
+  if (!selectedSymptoms.length) {
+    container.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:8px 0;display:flex;align-items:center;gap:6px" id="symptomsPlaceholder">← Search and add symptoms above</div>`;
+    btn.disabled = true;
+    return;
+  }
+  container.innerHTML = selectedSymptoms.map(s =>
+    `<div class="symptom-tag">${s.icon} ${s.label}<button onclick="removeSymptom('${s.id}')">×</button></div>`
+  ).join('');
+  btn.disabled = false;
+}
+
+function clearSymptoms() {
+  selectedSymptoms = [];
+  renderSelectedSymptoms();
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('symptomSearch').value = '';
+}
+
+function analyzeSymptoms() {
+  const btn = document.getElementById('analyzeBtn');
+  btn.textContent = '⏳ Analyzing...';
+  btn.disabled = true;
+  setTimeout(() => {
+    const results = generatePredictions();
+    renderResults(results);
+    btn.textContent = '🔬 Analyze Symptoms';
+    btn.disabled = false;
+    showToast('Analysis complete! Found ' + results.length + ' possible conditions.', 'success');
+  }, 1800);
+}
+
+function generatePredictions() {
+  const ids = selectedSymptoms.map(s => s.id);
+  const scores = {
+    flu: 0,
+    cold: 0,
+    migraine: 0,
+    gastro: 0,
+    pneumonia: 0
+  };
+  if (ids.includes('fever')) { scores.flu += 30; scores.pneumonia += 25; scores.cold += 10; }
+  if (ids.includes('headache')) { scores.flu += 20; scores.migraine += 40; scores.cold += 15; }
+  if (ids.includes('cough')) { scores.flu += 25; scores.cold += 30; scores.pneumonia += 35; }
+  if (ids.includes('fatigue')) { scores.flu += 20; scores.cold += 15; scores.migraine += 15; }
+  if (ids.includes('sore_throat')) { scores.flu += 20; scores.cold += 40; }
+  if (ids.includes('body_aches')) { scores.flu += 30; scores.cold += 10; }
+  if (ids.includes('runny_nose')) { scores.cold += 40; scores.flu += 10; }
+  if (ids.includes('nausea')) { scores.gastro += 35; scores.migraine += 20; }
+  if (ids.includes('vomiting')) { scores.gastro += 45; scores.migraine += 15; }
+  if (ids.includes('diarrhea')) { scores.gastro += 50; }
+  if (ids.includes('abdominal_pain')) { scores.gastro += 40; }
+  if (ids.includes('shortness_breath')) { scores.pneumonia += 45; }
+  if (ids.includes('chills')) { scores.flu += 25; scores.pneumonia += 20; }
+  if (ids.includes('dizziness')) { scores.migraine += 25; scores.flu += 10; }
+
+  return Object.entries(scores)
+    .filter(([,v]) => v > 0)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0,3)
+    .map(([key, score], i) => {
+      const maxScore = 100;
+      const prob = Math.min(95, Math.round(score * 100 / (maxScore + score * 0.3)));
+      const adjustedProb = Math.max(15, prob - i * 12);
+      return { key, prob: adjustedProb, severity: adjustedProb > 60 ? 'high' : adjustedProb > 35 ? 'medium' : 'low' };
+    });
+}
+
+function renderResults(results) {
+  const section = document.getElementById('resultsSection');
+  const countEl = document.getElementById('resultsCount');
+  const cardsEl = document.getElementById('diseaseCards');
+  countEl.textContent = results.length + ' conditions found';
+  cardsEl.innerHTML = results.map((r,i) => {
+    const d = DISEASES_DB[r.key];
+    if (!d) return '';
+    const sevColors = {high:'var(--red)',medium:'var(--yellow)',low:'var(--green)'};
+    const sevBg = {high:'rgba(239,68,68,.1)',medium:'rgba(245,158,11,.1)',low:'rgba(16,185,129,.1)'};
+    return `<div class="disease-card">
+      <div class="dc-header" onclick="toggleDC(this)">
+        <div class="dc-title">
+          <div class="dc-rank">${i+1}</div>
+          ${d.name}
+          <span class="badge" style="background:${sevBg[r.severity]};color:${sevColors[r.severity]}">${r.severity}</span>
+        </div>
+        <div class="dc-meta">
+          <div class="prob-bar-wrap">
+            <div class="prob-bar"><div class="prob-fill" style="width:0%" data-width="${r.prob}%"></div></div>
+            <div class="prob-pct">${r.prob}%</div>
+          </div>
+          <span style="font-size:16px;color:var(--text3)">▾</span>
+        </div>
+      </div>
+      <div class="dc-body">
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;padding:0 0 12px">${d.description}</div>
+        <div class="confidence-meter">
+          <span style="font-size:12px;color:var(--text3)">Confidence:</span>
+          <div class="conf-bar"><div class="conf-fill" style="width:${r.prob}%;background:linear-gradient(90deg,${d.colors.accent},${d.colors.accent}aa)"></div></div>
+          <span style="font-size:12px;font-weight:600;color:${d.colors.accent}">${r.prob}%</span>
+        </div>
+        <div class="dc-grid">
+          <div class="dc-section"><h4>⚠️ Precautions</h4><ul>${d.precautions.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div class="dc-section"><h4>🥗 Diet Tips</h4><ul>${d.diet.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div class="dc-section"><h4>💊 Medicines</h4><ul>${d.medicines.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div class="dc-section"><h4>🏃 Exercise</h4><ul>${d.exercise.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        </div>
+        <div class="dc-section" style="margin-top:12px;border-left:3px solid ${d.colors.accent};border-radius:0 var(--r) var(--r) 0;background:${d.colors.light}">
+          <h4>🏥 When to See a Doctor</h4>
+          <p style="font-size:13px;color:var(--text2)">${d.doctor}</p>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  section.style.display = 'block';
+
+  // Animate probability bars
+  setTimeout(() => {
+    document.querySelectorAll('.prob-fill[data-width]').forEach(el => {
+      el.style.width = el.dataset.width;
+    });
+  }, 100);
+}
+
+function toggleDC(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+  const arrow = header.querySelector('span:last-child');
+  arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+  arrow.style.transition = '.2s';
+}
+
+// ============== VOICE INPUT ==============
+let recognition = null;
+function toggleMic() {
+  const btn = document.getElementById('micBtn');
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    showToast('Voice input not supported in this browser','error');
+    return;
+  }
+  if (micActive) {
+    recognition && recognition.stop();
+    micActive = false;
+    btn.classList.remove('active');
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.onresult = e => {
+    const transcript = e.results[0][0].transcript;
+    document.getElementById('symptomSearch').value = transcript;
+    filterSymptoms(transcript);
+  };
+  recognition.onend = () => { micActive = false; btn.classList.remove('active'); };
+  recognition.start();
+  micActive = true;
+  btn.classList.add('active');
+  showToast('Listening... speak your symptoms','info');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.symptom-input-wrap')) {
+    document.getElementById('symptomsDropdown').style.display = 'none';
+  }
+});
+
+// ============== CHATBOT ==============
+function getAIResponse(msg) {
+  const lower = msg.toLowerCase();
+  if (lower.includes('fever') || lower.includes('temperature')) return AI_RESPONSES.fever[0];
+  if (lower.includes('headache') || lower.includes('head pain') || lower.includes('migraine')) return AI_RESPONSES.headache[0];
+  if (lower.includes('doctor') || lower.includes('hospital') || lower.includes('see a')) return AI_RESPONSES.doctor[0];
+  if (lower.includes('stress') || lower.includes('anxiety') || lower.includes('mental')) return AI_RESPONSES.stress[0];
+  if (lower.includes('diet') || lower.includes('food') || lower.includes('eat') || lower.includes('nutrition')) return AI_RESPONSES.diet[0];
+  return AI_RESPONSES.default[0];
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  appendMessage(msg, 'user');
+  input.value = '';
+  input.style.height = 'auto';
+  showTyping();
+  const delay = 800 + Math.random() * 1200;
+  setTimeout(() => {
+    removeTyping();
+    appendMessage(getAIResponse(msg), 'ai');
+  }, delay);
+}
+
+function sendSuggestion(el) {
+  const msg = el.textContent.replace(/[🤒🏥🧘🥗💊]/g,'').trim();
+  document.getElementById('chatInput').value = msg;
+  sendMessage();
+}
+
+function appendMessage(text, role) {
+  const msgs = document.getElementById('chatMessages');
+  const time = new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${role==='ai'?'🤖':'JD'}</div>
+    <div>
+      <div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>
+      <div class="msg-time">${time}</div>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-avatar">🤖</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ============== REPORTS ==============
+function renderReports() {
+  const list = document.getElementById('reportList');
+  const count = document.getElementById('reportCount');
+  count.textContent = reports.length + ' files';
+  list.innerHTML = reports.map((r,i) => `
+    <div class="report-item">
+      <div class="report-icon" style="background:${r.color}">${r.icon}</div>
+      <div class="report-info">
+        <div class="report-name">${r.name}</div>
+        <div class="report-meta">${r.type} · ${r.size} · Uploaded ${r.date}</div>
+      </div>
+      <div class="report-actions">
+        <button class="icon-btn" title="Download" onclick="showToast('Downloading ${r.name}...','info')">⬇</button>
+        <button class="icon-btn" title="View" onclick="showToast('Opening ${r.name}...','info')">👁</button>
+        <button class="icon-btn" title="Delete" onclick="deleteReport(${i})">🗑</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function deleteReport(i) {
+  reports.splice(i,1);
+  renderReports();
+  showToast('Report deleted','success');
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.add('drag');
+}
+
+function handleDragLeave() {
+  document.getElementById('uploadZone').classList.remove('drag');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  handleDragLeave();
+  const files = Array.from(e.dataTransfer.files);
+  processFiles(files);
+}
+
+function handleFileSelect(e) {
+  processFiles(Array.from(e.target.files));
+}
+
+function processFiles(files) {
+  files.forEach(f => {
+    const ext = f.name.split('.').pop().toUpperCase();
+    reports.unshift({
+      name: f.name.replace(/\.[^.]+$/,''),
+      type: ext,
+      size: (f.size / 1024 / 1024).toFixed(1) + ' MB',
+      date: new Date().toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}),
+      icon: ext === 'PDF' ? '📄' : '🖼',
+      color: 'rgba(59,130,246,.15)'
+    });
+  });
+  renderReports();
+  showToast(files.length + ' file(s) uploaded successfully', 'success');
+}
+
+// Init
+renderReports();
+</script>
+</body>
+</html>
